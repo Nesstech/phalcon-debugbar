@@ -4,7 +4,7 @@
  * Date: 15/3/14
  * Time: 20:24
  */
-namespace Snowair\Debugbar\Phalcon\Cache;
+namespace Grimston\Debugbar\Phalcon\Cache;
 
 use Phalcon\Cache\Exception\Exception;
 

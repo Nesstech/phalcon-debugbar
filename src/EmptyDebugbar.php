@@ -5,7 +5,7 @@
  * Time: 下午10:40
  */
 
-namespace Snowair\Debugbar;
+namespace Grimston\Debugbar;
 
 
 class EmptyDebugbar {

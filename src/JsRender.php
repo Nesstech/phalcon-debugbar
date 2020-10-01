@@ -5,12 +5,11 @@
  * Time: 13:29
  */
 
-namespace Snowair\Debugbar;
+namespace Grimston\Debugbar;
 
 use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
 use Phalcon\Di;
-use Phalcon\Dispatcher;
 use Phalcon\Mvc\Application;
 
 class JsRender extends JavascriptRenderer{

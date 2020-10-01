@@ -5,7 +5,7 @@
  * Time: 18:04
  */
 
-namespace Snowair\Debugbar\DataCollector;
+namespace Grimston\Debugbar\DataCollector;
 
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\DataCollectorInterface;

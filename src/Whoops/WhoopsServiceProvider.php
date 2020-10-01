@@ -5,17 +5,17 @@
  * Time: 下午10:36
  */
 
-namespace Snowair\Debugbar\Whoops;
+namespace Grimston\Debugbar\Whoops;
 /**
  * Whoops - php errors for cool kids
  * @author Filipe Dobreira <http://github.com/filp>
  */
+
 use Phalcon\DI;
 use Phalcon\DI\Exception;
-use Phalcon\Dispatcher;
 use Whoops\Handler\JsonResponseHandler;
-use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
+
 class WhoopsServiceProvider
 {
     /**

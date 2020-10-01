@@ -5,7 +5,7 @@
  * Time: 17:19
  */
 
-namespace Snowair\Debugbar\Controllers;
+namespace Grimston\Debugbar\Controllers;
 
 use Phalcon\Mvc\Controller;
 

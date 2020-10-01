@@ -5,9 +5,7 @@
  * Time: 11:31
  */
 
-namespace Snowair\Debugbar\Phalcon\View;
-
-use Phalcon\DI;
+namespace Grimston\Debugbar\Phalcon\View;
 
 class VoltFunctions {
 

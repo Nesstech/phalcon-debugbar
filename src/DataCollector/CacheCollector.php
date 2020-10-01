@@ -5,11 +5,10 @@
  * Time: 17:49
  */
 
-namespace Snowair\Debugbar\DataCollector;
+namespace Grimston\Debugbar\DataCollector;
 
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use Phalcon\Cache;
 
 class CacheCollector extends DataCollector implements Renderable{
 

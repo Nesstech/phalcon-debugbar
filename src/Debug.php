@@ -10,13 +10,14 @@ use Phalcon\Di;
 class PhalconDebug{
 
 	/**
-	 * @var  \Snowair\Debugbar\PhalconDebugbar
+	 * @var  \Grimston\Debugbar\PhalconDebugbar
 	 */
 	static public $debugbar;
 
 	/**
 	 * GET the debugbar service Instance
-	 * @return \Snowair\Debugbar\PhalconDebugbar
+	 *
+	 * @return \Grimston\Debugbar\PhalconDebugbar
 	 */
 	protected static function debugbar(){
 		if ( !self::$debugbar ) {
@@ -24,7 +25,7 @@ class PhalconDebug{
 			if ( $di->has( 'debugbar' ) ) {
 				return self::$debugbar=$di->getShared('debugbar');
 			}else{
-                return self::$debugbar= new \Snowair\Debugbar\EmptyDebugbar();
+                return self::$debugbar= new \Grimston\Debugbar\EmptyDebugbar();
 			}
 		}
 		return self::$debugbar;

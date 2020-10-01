@@ -1,28 +1,49 @@
 {
-    "name": "snowair/phalcon-debugbar",
-    "description": "Integrates PHP Debug Bar with Phalcon.",
-    "type": "library",
-    "keywords": ["phalcon", "debugbar", "profiler", "debug", "webprofiler"],
-    "require": {
-        "php": ">=5.5.0",
-        "maximebf/debugbar": "^1",
-        "filp/whoops": "^2"
+  "name": "grimston/phalcon-debugbar",
+  "description": "Integrates PHP Debug Bar with Phalcon.",
+  "type": "library",
+  "keywords": [
+    "phalcon",
+    "debugbar",
+    "profiler",
+    "debug",
+    "webprofiler"
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "maximebf/debugbar": "^1",
+    "filp/whoops": "^2"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-master",
+    "phalcon/ide-stubs": "^4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Grimston\\Debugbar\\": "src/"
     },
-    "autoload": {
-        "psr-4": {
-            "Snowair\\Debugbar\\": "src/"
-        },
-        "files":[
-          "src/Debug.php"
-        ]
+    "files": [
+      "src/Debug.php"
+    ]
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nathan Pipes",
+      "email": "nathan@npipes.net",
+      "homepage": "https://github.com/OrangeTanguine",
+      "role": "Developer"
     },
-
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "snowair",
-            "email": "xcoolcc@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev"
+    {
+      "name": "Guillaume",
+      "homepage": "https://github.com/OrangeTanguine",
+      "role": "Developer"
+    },
+    {
+      "name": "snowair",
+      "email": "xcoolcc@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "dev"
 }

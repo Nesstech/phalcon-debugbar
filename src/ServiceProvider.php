@@ -5,23 +5,22 @@
  * Time: 16:09
  */
 
-namespace Snowair\Debugbar;
+namespace Grimston\Debugbar;
 
+use Grimston\Debugbar\Controllers\AssetController;
+use Grimston\Debugbar\Controllers\OpenHandlerController;
+use Phalcon\Config;
+use Phalcon\Config\Adapter\Ini;
+use Phalcon\Config\Adapter\Json;
+use Phalcon\Config\Adapter\Php;
+use Phalcon\Config\Adapter\Yaml;
+use Phalcon\DI\Injectable;
 use Phalcon\Events\Manager;
 use Phalcon\Http\Request;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Micro;
 use Phalcon\Version;
-use Snowair\Debugbar\Controllers\AssetController;
-use Snowair\Debugbar\Controllers\OpenHandlerController;
-use Phalcon\Config\Adapter\Php;
-use Phalcon\Config\Adapter\Ini;
-use Phalcon\Config\Adapter\Json;
-use Phalcon\Config\Adapter\Yaml;
-use Phalcon\Config;
-use Phalcon\DI\Injectable;
-use Snowair\Debugbar\Controllers\ToolsController;
 
 class ServiceProvider extends Injectable {
 
@@ -69,9 +68,9 @@ class ServiceProvider extends Injectable {
 				$base->merge($config);
 			}elseif( is_object($configPath) && $configPath instanceof Config){
 				$base->merge($configPath);
-			}else{
 			}
-			return $base;
+
+            return $base;
 		},true);
 
 		$this->di->set('debugbar', function(){
@@ -105,19 +104,19 @@ class ServiceProvider extends Injectable {
 
 		}elseif (  $app instanceof Application ) {
 			$router->add('/_debugbar/open',array(
-				'namespace'=>'Snowair\Debugbar\Controllers',
+				'namespace'=>'Grimston\Debugbar\Controllers',
 				'controller'=>'open_handler',
 				'action'=>'handle',
 			))->setName('debugbar.openhandler');
 
 			$router->add('/_debugbar/assets/stylesheets',array(
-				'namespace'=>'Snowair\Debugbar\Controllers',
+				'namespace'=>'Grimston\Debugbar\Controllers',
 				'controller'=>'Asset',
 				'action'=>'css',
 			))->setName('debugbar.assets.css');
 
 			$router->add('/_debugbar/assets/javascript',array(
-				'namespace'=>'Snowair\Debugbar\Controllers',
+				'namespace'=>'Grimston\Debugbar\Controllers',
 				'controller'=>'Asset',
 				'action'=>'js',
 			))->setName('debugbar.assets.js');
@@ -195,15 +194,13 @@ class ServiceProvider extends Injectable {
                         $app->useImplicitView(false);
                     }
 
-                    if (  $app instanceof Application  && $app->getModules()) {
-                        if($moduleName=$request->get('m')){
-                            $this->dispatcher->setModuleName($moduleName);
-                            $module=$this->di['app']->getModule($moduleName);
-                            require $module['path'];
-                            $moduleObject=$this->di->get($module['className']);
-                            $moduleObject->registerAutoloaders($this->di);
-                            $moduleObject->registerServices($this->di);
-                        }
+                    if ($app instanceof Application && $app->getModules() && $moduleName = $request->get('m')) {
+                        $this->dispatcher->setModuleName($moduleName);
+                        $module=$this->di['app']->getModule($moduleName);
+                        require $module['path'];
+                        $moduleObject=$this->di->get($module['className']);
+                        $moduleObject->registerAutoloaders($this->di);
+                        $moduleObject->registerServices($this->di);
                     }
 
                     $debugbar->isDebugbarRequest=true;

@@ -1,14 +1,12 @@
-[![Latest Stable Version](https://poser.pugx.org/snowair/phalcon-debugbar/v/stable)](https://packagist.org/packages/snowair/phalcon-debugbar) 
-[![Total Downloads](https://poser.pugx.org/snowair/phalcon-debugbar/downloads)](https://packagist.org/packages/snowair/phalcon-debugbar) 
-[![Latest Unstable Version](https://poser.pugx.org/snowair/phalcon-debugbar/v/unstable)](https://packagist.org/packages/snowair/phalcon-debugbar) 
-[![License](https://poser.pugx.org/snowair/phalcon-debugbar/license)](https://packagist.org/packages/snowair/phalcon-debugbar)
-
 ## Phalcon Debugbar
 
 Integrates [PHP Debug Bar](https://github.com/maximebf/php-debugbar) with [Phalcon Framework](https://github.com/phalcon/cphalcon).
 
+## Notes
+Please be aware the namespace has changed. This was done to separate Snowair's version which is designed for Phalcon 1 
+to 3.
 
-[中文说明](https://github.com/snowair/phalcon-debugbar/blob/master/README_zh.md)
+Phalcon 4 made many changes and is not backwards compatible, so total seperation seemed to be the best choice.
 
 ## Features
 
@@ -17,10 +15,10 @@ Integrates [PHP Debug Bar](https://github.com/maximebf/php-debugbar) with [Phalc
 3. Redirect request chain capturing
 4. Simple App, Multi module App and Micro App support
 5. Data collected persistent : save to **Local File** or **MongoDB**, or **ElasticSearch**
-6. Data storaged by sessionid, it's more firendly for team development.
+6. Data storaged by sessionid, it's more friendly for team development.
 7. You can close inject debugbar, and on a new browser tab, visit `/_debugbar/open` to see data(and it alse can be disabled).
 8. Whoops Integration, and debugbar works well with it.
-9. Support palcon 1.3.x,2.x,3.x, PHP5.5~7.1
+9. Support Phalcon 4.x, PHP7.4
 
 ### Support Collectors
 
@@ -76,7 +74,7 @@ Integrates [PHP Debug Bar](https://github.com/maximebf/php-debugbar) with [Phalc
 2. Before handle app, register and boot debugbar provider. 
 
     ```php
-    (new Snowair\Debugbar\ServiceProvider())->start();
+    (new Grimston\Debugbar\ServiceProvider())->start();
     // after start the debugbar, you can do noting but handle your app right now.
     echo $application->handle()->getContent();
     ```
@@ -84,7 +82,7 @@ Integrates [PHP Debug Bar](https://github.com/maximebf/php-debugbar) with [Phalc
 3. **optional**  to use Whoops, modify the index.php, add follow codes bellow the debugbar service `start()` method.
 
     ```
-    (new \Snowair\Debugbar\Whoops\WhoopsServiceProvider($di));
+    (new \Grimston\Debugbar\Whoops\WhoopsServiceProvider($di));
     ```
     
 ### Modify The ACL Code
@@ -106,7 +104,7 @@ public function beforeDispatch(Event $event, Dispatcher $dispatcher)
         
         /* Debugbar start */
         $ns = $dispatcher->getNamespaceName();
-        if ($ns=='Snowair\Debugbar\Controllers') {
+        if ($ns=='Grimston\Debugbar\Controllers') {
             return true;
         }
         /* Debugbar end */
@@ -155,7 +153,7 @@ If you are using nginx, you should enable the Rewrite mod and edit the location 
 Copy `config/debugbar.php` to your config directory, and change any settings you want. Then use your debugbar config file by:
 
 ```php
-(new Snowair\Debugbar\ServiceProvider('your-debugbar-config-file-path'))->start();
+(new Grimston\Debugbar\ServiceProvider('your-debugbar-config-file-path'))->start();
 ```
 
 ### Send custom messages to debugbar

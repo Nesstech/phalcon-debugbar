@@ -4,7 +4,7 @@
  * @author Filipe Dobreira <http://github.com/filp>
  */
 
-namespace Snowair\Debugbar\Whoops;
+namespace Grimston\Debugbar\Whoops;
 
 use InvalidArgumentException;
 use RuntimeException;
@@ -14,7 +14,6 @@ use UnexpectedValueException;
 use Whoops\Exception\Formatter;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PlainTextHandler;
-use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 use Whoops\Util\Misc;
 use Whoops\Util\TemplateHelper;

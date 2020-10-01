@@ -5,10 +5,10 @@
  * Time: 17:23
  */
 
-namespace Snowair\Debugbar\Controllers;
+namespace Grimston\Debugbar\Controllers;
 
+use Grimston\Debugbar\PhalconDebugbar;
 use Phalcon\Http\Response;
-use Snowair\Debugbar\PhalconDebugbar;
 
 /**
  * @property PhalconDebugbar debugbar

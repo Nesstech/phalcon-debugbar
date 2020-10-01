@@ -5,7 +5,7 @@
  * Time: 11:25
  */
 
-namespace Snowair\Debugbar;
+namespace Grimston\Debugbar;
 
 use DebugBar\Bridge\DoctrineCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
@@ -16,10 +16,24 @@ use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DebugBar;
+use Doctrine\DBAL\Logging\DebugStack;
 use Exception;
+use Grimston\Debugbar\DataCollector\CacheCollector;
+use Grimston\Debugbar\DataCollector\ConfigCollector;
+use Grimston\Debugbar\DataCollector\LogsCollector;
+use Grimston\Debugbar\DataCollector\MessagesCollector;
+use Grimston\Debugbar\DataCollector\PhalconRequestCollector;
+use Grimston\Debugbar\DataCollector\QueryCollector;
+use Grimston\Debugbar\DataCollector\RouteCollector;
+use Grimston\Debugbar\DataCollector\SessionCollector;
+use Grimston\Debugbar\DataCollector\ViewCollector;
+use Grimston\Debugbar\Phalcon\Db\Profiler;
+use Grimston\Debugbar\Phalcon\View\VoltFunctions;
+use Grimston\Debugbar\Storage\ElasticSearch;
+use Grimston\Debugbar\Storage\Filesystem;
+use Grimston\Debugbar\Storage\MongoDB;
 use Phalcon\Cache;
 use Phalcon\Db\Adapter\AbstractAdapter;
-use Phalcon\Db\Adapter\Pdo\AbstractPdo;
 use Phalcon\DI;
 use Phalcon\Events\Event;
 use Phalcon\Events\Manager;
@@ -29,20 +43,6 @@ use Phalcon\Mvc\View\Engine\Volt;
 use Phalcon\Mvc\View\Simple;
 use Phalcon\Registry;
 use Phalcon\Version;
-use Snowair\Debugbar\DataCollector\CacheCollector;
-use Snowair\Debugbar\DataCollector\ConfigCollector;
-use Snowair\Debugbar\DataCollector\LogsCollector;
-use Snowair\Debugbar\DataCollector\MessagesCollector;
-use Snowair\Debugbar\DataCollector\PhalconRequestCollector;
-use Snowair\Debugbar\DataCollector\QueryCollector;
-use Snowair\Debugbar\DataCollector\RouteCollector;
-use Snowair\Debugbar\DataCollector\SessionCollector;
-use Snowair\Debugbar\DataCollector\ViewCollector;
-use Snowair\Debugbar\Phalcon\Db\Profiler;
-use Snowair\Debugbar\Phalcon\View\VoltFunctions;
-use Snowair\Debugbar\Storage\ElasticSearch;
-use Snowair\Debugbar\Storage\Filesystem;
-use Snowair\Debugbar\Storage\MongoDB;
 
 /**
  * Debug bar subclass which adds all without Request and with Collector.
@@ -203,8 +203,9 @@ class PhalconDebugbar extends DebugBar {
             return;
         }
         $this->booted = true;
-        if ( isset($_REQUEST['_url']) and $_REQUEST['_url']=='/favicon.ico'
-            || isset($_SERVER['REQUEST_URI']) and $_SERVER['REQUEST_URI']=='/favicon.ico'|| !$this->isEnabled()) {
+        if ((isset($_REQUEST['_url']) && $_REQUEST['_url'] === '/favicon.ico')
+            || (isset($_SERVER['REQUEST_URI']) && $_SERVER['REQUEST_URI'] === '/favicon.ico')
+            || !$this->isEnabled()) {
             return;
         }
 
@@ -227,7 +228,7 @@ class PhalconDebugbar extends DebugBar {
             if ( stripos( $name, 'cache' )!==false ) {
                 $this->attachCache( $name );
             }
-            if ( stripos($name,'db')===0 || strtolower(substr($name,-2)) =='db' ) {
+            if ( stripos($name,'db')===0 || strtolower(substr($name,-2)) === 'db' ) {
                 $this->attachDb( $name );
             }
         }
@@ -238,7 +239,7 @@ class PhalconDebugbar extends DebugBar {
             $this->attachMailer( $this->di['mailer'] );
         }
         if ($this->shouldCollect('doctrine', false) &&!$this->hasCollector('doctrine') && !$this->hasCollector('AbstractPdo') ) {
-            $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
+            $debugStack = new DebugStack();
             $entityManager = $this->di['entityManager'];
             $entityManager->getConnection()->getConfiguration()->setSQLLogger($debugStack);
             $doctrine = new DoctrineCollector($debugStack);
@@ -258,7 +259,7 @@ class PhalconDebugbar extends DebugBar {
             return;
         }
         if ( !is_string( $cacheService ) ) {
-            throw new \Exception('The parameter must be a cache service name.');
+            throw new \RuntimeException('The parameter must be a cache service name.');
         }
         if ( !$mode ) {
             $mode  = $this->config->options->cache->get('mode',0);
@@ -447,14 +448,14 @@ CLASS;
         $config = $this->config;
         if ($config->storage->enabled) {
             $driver = $config->storage->get('driver','file');
-            if ($driver=='mongodb') {
+            if ($driver === 'mongodb') {
                 $connection = $config->storage->mongodb->connection;
                 $db         = $config->storage->mongodb->db;
                 $collection = $config->storage->mongodb->collection;
                 $options    = $config->storage->mongodb->options;
                 $dirveropts = $config->storage->mongodb->driver_options;
                 $storage    = new MongoDB( $this->di, $connection, $db, $collection, $options,$dirveropts );
-            }elseif ($driver=='elastic') {
+            }elseif ($driver === 'elastic') {
                 $storage    = new ElasticSearch( $this->di,$config->storage->elastic );
             } else {
                 $path    = $config->storage->path;
@@ -697,7 +698,7 @@ CLASS;
                     $profiler,$queryCollector
                 ) {
                     $profiler->setDb($db);
-                    if ($event->getType() == 'beforeQuery') {
+                    if ($event->getType() === 'beforeQuery') {
                         $sql = $db->getRealSQLStatement();
                         $bindTypes = $db->getSQLBindTypes();
                         if ( stripos( strtr($sql,[' '=>'']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`' )===false
@@ -712,7 +713,7 @@ CLASS;
                             }
                         }
                     }
-                    if ($event->getType() == 'afterQuery') {
+                    if ($event->getType() === 'afterQuery') {
                         $sql = $db->getRealSQLStatement();
                         if ( stripos( strtr($sql,[' '=>'']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`' )===false
                             && stripos( $sql, 'DESCRIBE')!==0) {
@@ -822,7 +823,7 @@ CLASS;
 
         // Check if the request wants Json
         $acceptable = $this->di['request']->getAcceptableContent();
-        return (isset($acceptable[0]) && $acceptable[0]['accept'] == 'application/json');
+        return (isset($acceptable[0]) && $acceptable[0]['accept'] === 'application/json');
     }
 
 

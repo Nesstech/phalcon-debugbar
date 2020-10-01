@@ -5,13 +5,12 @@
  * Time: 12:25
  */
 
-namespace Snowair\Debugbar\Phalcon\Db;
+namespace Grimston\Debugbar\Phalcon\Db;
 
-use Phalcon\Db\Adapter;
-use Phalcon\Version;
+use Grimston\Debugbar\Phalcon\Db\Profiler\Item;
 use Phalcon\Db\Column;
-use \Phalcon\Db\Profiler as PhalconProfiler;
-use Snowair\Debugbar\Phalcon\Db\Profiler\Item;
+use Phalcon\Db\Profiler as PhalconProfiler;
+use Phalcon\Version;
 
 class Profiler extends  PhalconProfiler {
 

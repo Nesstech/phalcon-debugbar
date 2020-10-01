@@ -5,13 +5,13 @@
  * Time: 22:03
  */
 
-namespace Snowair\Debugbar\Phalcon\Logger\Adapter;
+namespace Grimston\Debugbar\Phalcon\Logger\Adapter;
 
-use Phalcon\Version;
+use Grimston\Debugbar\PhalconDebugbar;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\AdapterInterface;
 use Phalcon\Logger\Formatter\Line;
-use Snowair\Debugbar\PhalconDebugbar;
+use Phalcon\Version;
 
 class Debugbar extends AbstractAdapter implements AdapterInterface{
 

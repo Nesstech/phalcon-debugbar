@@ -1,9 +1,9 @@
 <?php
 
-namespace Snowair\Debugbar\Monolog\Handler;
+namespace Grimston\Debugbar\Monolog\Handler;
 
-use  Monolog\Handler\AbstractProcessingHandler;
-use Snowair\Debugbar\PhalconDebugbar;
+use Grimston\Debugbar\PhalconDebugbar;
+use Monolog\Handler\AbstractProcessingHandler;
 
 class Debugbar extends AbstractProcessingHandler
 {

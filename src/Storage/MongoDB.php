@@ -5,10 +5,9 @@
  * Time: 下午10:24
  */
 
-namespace Snowair\Debugbar\Storage;
+namespace Grimston\Debugbar\Storage;
 
 use DebugBar\Storage\StorageInterface;
-use Phalcon\Exception;
 
 class MongoDB implements StorageInterface
 {

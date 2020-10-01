@@ -6,11 +6,10 @@
  * Time: 下午10:35
  */
 
-namespace Snowair\Debugbar\Storage;
+namespace Grimston\Debugbar\Storage;
 
 use DebugBar\Storage\StorageInterface;
 use Elasticsearch\Client;
-
 use Elasticsearch\ClientBuilder;
 
 

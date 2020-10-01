@@ -5,16 +5,16 @@
  * Time: 11:31
  */
 
-namespace Snowair\Debugbar\DataCollector;
+namespace Grimston\Debugbar\DataCollector;
 
 
 use DebugBar\DataCollector\PDO\PDOCollector;
+use Grimston\Debugbar\Phalcon\Db\Profiler\Item;
 use Phalcon\Db\Profiler;
-use Snowair\Debugbar\Phalcon\Db\Profiler\Item;
 
 class QueryCollector extends PDOCollector{
 	/**
-	 * @var \Snowair\Debugbar\Phalcon\Db\Profiler $profiler
+	 * @var \Grimston\Debugbar\Phalcon\Db\Profiler $profiler
 	 */
 	protected $profiler;
 	protected $showConnection=false;
@@ -132,7 +132,7 @@ class QueryCollector extends PDOCollector{
 	}
 
 	/**
-	 * @return \Snowair\Debugbar\Phalcon\Db\Profiler
+	 * @return \Grimston\Debugbar\Phalcon\Db\Profiler
 	 */
 	public function getProfiler() {
 		return $this->profiler;

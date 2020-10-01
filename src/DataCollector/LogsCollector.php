@@ -5,17 +5,16 @@
  * Time: 22:27
  */
 
-namespace Snowair\Debugbar\DataCollector;
+namespace Grimston\Debugbar\DataCollector;
 
 
+use Grimston\Debugbar\Phalcon\Logger\Adapter\Debugbar;
+use Grimston\Debugbar\PhalconDebugbar;
 use Monolog\Logger;
 use Phalcon\DI;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Formatter\Line;
 use Phalcon\Logger\FormatterInterface;
-use Psr\Log\LoggerInterface;
-use Snowair\Debugbar\Phalcon\Logger\Adapter\Debugbar;
-use Snowair\Debugbar\PhalconDebugbar;
 
 class LogsCollector extends MessagesCollector{
 
@@ -54,7 +53,7 @@ class LogsCollector extends MessagesCollector{
 			}elseif($log instanceof Multiple){
 				$log->push( $debugbar_loger );
 			}elseif( class_exists('Monolog\Logger') && $log instanceof Logger ){
-				$handler = new \Snowair\Debugbar\Monolog\Handler\Debugbar($this->_debugbar);
+				$handler = new \Grimston\Debugbar\Monolog\Handler\Debugbar($this->_debugbar);
 				$log->pushHandler($handler);
 			}
 

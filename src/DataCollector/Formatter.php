@@ -5,15 +5,13 @@
  * Time: 17:15
  */
 
-namespace Snowair\Debugbar\DataCollector;
+namespace Grimston\Debugbar\DataCollector;
 
 use Phalcon\Db\Result\Pdo;
-use Phalcon\Forms\Element;
 use Phalcon\Forms\Form;
-use Phalcon\Mvc\Model;
-use Phalcon\Mvc\Model\Resultset\Complex;
 use Phalcon\Messages\Message;
 use Phalcon\Messages\Messages;
+use Phalcon\Mvc\Model\Resultset\Complex;
 
 trait Formatter  {
 

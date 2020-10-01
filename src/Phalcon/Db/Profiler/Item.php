@@ -5,7 +5,7 @@
  * Date: 15/3/6
  * Time: 13:06
  */
-namespace Snowair\Debugbar\Phalcon\Db\Profiler;
+namespace Grimston\Debugbar\Phalcon\Db\Profiler;
 
 use Phalcon\Db\Profiler\Item as ProfilerItem;
 

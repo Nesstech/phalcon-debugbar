@@ -5,10 +5,10 @@
  * Time: 11:55
  */
 
-namespace Snowair\Debugbar;
+namespace Grimston\Debugbar;
 
-use Phalcon\DI\Injectable;
 use DebugBar\HttpDriverInterface;
+use Phalcon\DI\Injectable;
 
 class PhalconHttpDriver extends Injectable implements HttpDriverInterface {
 

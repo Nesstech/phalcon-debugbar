@@ -5,7 +5,7 @@
  * Time: 14:51
  */
 
-namespace Snowair\Debugbar\Storage;
+namespace Grimston\Debugbar\Storage;
 
 use DebugBar\Storage\StorageInterface;
 use Phalcon\Di;

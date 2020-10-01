@@ -5,7 +5,7 @@
  * Time: 10:45
  */
 
-namespace Snowair\Debugbar\DataCollector;
+namespace Grimston\Debugbar\DataCollector;
 
 use DebugBar\Bridge\Twig\TwigCollector;
 
