@@ -5,6 +5,7 @@
  * Time: 20:50
  */
 
+use Grimston\Debugbar\EmptyDebugbar;
 use Phalcon\Di;
 
 class PhalconDebug{
@@ -24,10 +25,10 @@ class PhalconDebug{
 			$di = Di::getDefault();
 			if ( $di->has( 'debugbar' ) ) {
 				return self::$debugbar=$di->getShared('debugbar');
-			}else{
-                return self::$debugbar= new \Grimston\Debugbar\EmptyDebugbar();
 			}
-		}
+
+            return self::$debugbar= new EmptyDebugbar();
+        }
 		return self::$debugbar;
 	}
 
