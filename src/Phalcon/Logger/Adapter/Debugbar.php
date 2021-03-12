@@ -9,7 +9,8 @@ namespace Grimston\Debugbar\Phalcon\Logger\Adapter;
 
 use Grimston\Debugbar\PhalconDebugbar;
 use Phalcon\Logger\Adapter\AbstractAdapter;
-use Phalcon\Logger\AdapterInterface;
+use Phalcon\Logger\Adapter\AdapterInterface;
+use Phalcon\Logger\Formatter\FormatterInterface;
 use Phalcon\Logger\Formatter\Line;
 use Phalcon\Version;
 
@@ -44,7 +45,7 @@ class Debugbar extends AbstractAdapter implements AdapterInterface{
 	 * Returns the internal formatter
 	 * @return \Phalcon\Logger\FormatterInterface
 	 */
-	public function getFormatter() {
+	public function getFormatter(): FormatterInterface {
 		if ( !is_object($this->_formatter) ){
 			$this->_formatter = new Line();
 		}
@@ -55,7 +56,7 @@ class Debugbar extends AbstractAdapter implements AdapterInterface{
 	 * Closes the logger
 	 * @return boolean
 	 */
-	public function close() {
+	public function close(): bool {
 		return true;
 	}
 }
