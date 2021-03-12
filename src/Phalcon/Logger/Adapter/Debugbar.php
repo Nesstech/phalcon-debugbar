@@ -60,8 +60,14 @@ class Debugbar extends AbstractAdapter implements AdapterInterface{
 	public function close(): bool {
 		return true;
 	}
-	
-	public function process(Item $item) {
+  
+  /**
+   * Processes the message in the adapter
+   *
+   * @param \Phalcon\Logger\Item $item
+   * @return void
+   */
+	public function process(Item $item): void {
     $this->log($item->getType(),$item->getMessage(),$item->getContext());
   }
 }
