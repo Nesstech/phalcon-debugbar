@@ -12,6 +12,7 @@ use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Formatter\FormatterInterface;
 use Phalcon\Logger\Formatter\Line;
+use Phalcon\Logger\Item;
 use Phalcon\Version;
 
 class Debugbar extends AbstractAdapter implements AdapterInterface{
@@ -59,4 +60,8 @@ class Debugbar extends AbstractAdapter implements AdapterInterface{
 	public function close(): bool {
 		return true;
 	}
+	
+	public function process(Item $item) {
+    $this->log($item->getType(),$item->getMessage(),$item->getContext());
+  }
 }
