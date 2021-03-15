@@ -74,7 +74,8 @@ class Profiler extends  PhalconProfiler {
 		if( !$sqlVariables )  {
 		    $sqlVariables = $this->_db->getSqlVariables();
 		}
-
+  
+		$sqlStatement = (string)$sqlStatement;
 		$activeProfile->setSqlStatement($sqlStatement);
 		$activeProfile->setRealSQL($this->getRealSql($sqlStatement,$sqlVariables,$sqlBindTypes));
 
