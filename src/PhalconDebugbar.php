@@ -416,7 +416,13 @@ PROXY_CLASS;
             }
 
             $templates = $viewProfiler->templates;
+            if(is_array($viewFilePath)){
+              foreach($viewFilePath as $infos_path){
+                $templates[$infos_path]['startTime'] = microtime(true);
+              }
+            }else{
               $templates[$viewFilePath]['startTime'] = microtime(true);
+            }
             $viewProfiler->templates = $templates;
         });
         $eventsManager->attach('view:afterRenderView', function ($event, $view) use ($viewProfiler) {
