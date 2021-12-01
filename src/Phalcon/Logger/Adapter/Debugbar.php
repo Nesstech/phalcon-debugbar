@@ -8,10 +8,12 @@
 namespace Snowair\Debugbar\Phalcon\Logger\Adapter;
 
 use Phalcon\Version;
-use Phalcon\Logger\Adapter;
-use Phalcon\Logger\AdapterInterface;
+use Phalcon\Logger\Adapter\AbstractAdapter as Adapter;
+use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Formatter\Line;
+use Phalcon\Logger\Formatter\FormatterInterface;
 use Snowair\Debugbar\PhalconDebugbar;
+use Phalcon\Logger\Item;
 
 class Debugbar extends Adapter implements AdapterInterface{
 
@@ -42,9 +44,9 @@ class Debugbar extends Adapter implements AdapterInterface{
 
 	/**
 	 * Returns the internal formatter
-	 * @return \Phalcon\Logger\FormatterInterface
+	 * @return FormatterInterface
 	 */
-	public function getFormatter() {
+	public function getFormatter(): FormatterInterface {
 		if ( !is_object($this->_formatter) ){
 			$this->_formatter = new Line();
 		}
@@ -55,7 +57,11 @@ class Debugbar extends Adapter implements AdapterInterface{
 	 * Closes the logger
 	 * @return boolean
 	 */
-	public function close() {
+	public function close(): bool {
 		return true;
 	}
+  
+  public function process(Item $item): void {
+    $this->log($item->getType(),$item->getMessage(),$item->getContext());
+  }
 }
