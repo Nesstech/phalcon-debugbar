@@ -416,7 +416,7 @@ PROXY_CLASS;
             }
 
             $templates = $viewProfiler->templates;
-            $templates[$viewFilePath]['startTime'] = microtime(true);
+              $templates[$viewFilePath]['startTime'] = microtime(true);
             $viewProfiler->templates = $templates;
         });
         $eventsManager->attach('view:afterRenderView', function ($event, $view) use ($viewProfiler) {
@@ -703,7 +703,7 @@ PROXY_CLASS;
                 ) {
                     $profiler->setDb($db);
                     if ($event->getType() == 'beforeQuery') {
-                        $sql = $db->getRealSQLStatement();
+                        $sql = $db->getSQLStatement();
                         $bindTypes = $db->getSQLBindTypes();
                         if (stripos(strtr($sql, [' ' => '']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`') === false
                             && stripos($sql, 'DESCRIBE') !== 0) {
@@ -718,7 +718,7 @@ PROXY_CLASS;
                         }
                     }
                     if ($event->getType() == 'afterQuery') {
-                        $sql = $db->getRealSQLStatement();
+                        $sql = $db->getSQLStatement();
                         if (stripos(strtr($sql, [' ' => '']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`') === false
                             && stripos($sql, 'DESCRIBE') !== 0) {
                             $profiler->stopProfile();
