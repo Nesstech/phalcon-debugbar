@@ -7,7 +7,7 @@
 
 namespace Snowair\Debugbar\Phalcon\Db;
 
-use Phalcon\Db\Adapter;
+use Phalcon\Db\Adapter\AbstractAdapter;
 use Phalcon\Version;
 use Phalcon\Db\Column;
 use \Phalcon\Db\Profiler as PhalconProfiler;
@@ -24,7 +24,7 @@ class Profiler extends  PhalconProfiler {
 	 */
 	protected $_activeProfile;
 	/**
-	 * @var Adapter  $_db
+	 * @var AbstractAdapter  $_db
 	 */
 	protected $_db;
 
@@ -62,12 +62,12 @@ class Profiler extends  PhalconProfiler {
 	 * Starts the profile of a SQL sentence
 	 *
 	 * @param string $sqlStatement
-	 * @param mixed   $sqlVariables
-	 * @param mixed   $sqlBindTypes
+	 * @param null|array   $sqlVariables
+	 * @param null|array   $sqlBindTypes
 	 *
-	 * @return PhalconProfiler
+	 * @return Profiler
 	 */
-	public function startProfile(string $sqlStatement, $sqlVariables = null, $sqlBindTypes = null) : PhalconProfiler
+	public function startProfile(string $sqlStatement, $sqlVariables = NULL, $sqlBindTypes = NULL): \Phalcon\Db\Profiler
 	{
 		$this->handleFailed();
 		$activeProfile = new Item();
@@ -78,7 +78,7 @@ class Profiler extends  PhalconProfiler {
 
 		$activeProfile->setSqlStatement($sqlStatement);
 		$activeProfile->setRealSQL($this->getRealSql($sqlStatement,$sqlVariables,$sqlBindTypes));
-
+		
 		if ( is_array($sqlVariables) ) {
 			$activeProfile->setSqlVariables($sqlVariables);
 		}
@@ -94,7 +94,6 @@ class Profiler extends  PhalconProfiler {
 		}
 
 		$this->_activeProfile = $activeProfile;
-
 
 		$this->_stoped = false;
 		return $this;
@@ -170,18 +169,13 @@ class Profiler extends  PhalconProfiler {
      *
      * @return PhalconProfiler
      */
-    public function stopProfile() : PhalconProfiler
+    public function stopProfile(): \Phalcon\Db\Profiler
     {
         $finalTime = microtime(true);
         $activeProfile = $this->_activeProfile;
         $activeProfile->setFinalTime($finalTime);
 
         $initialTime = $activeProfile->getInitialTime();
-
-        if(!isset($this->totalSeconds)){
-            $this->totalSeconds = 0;
-        }
-
         $this->totalSeconds = $this->totalSeconds + ($finalTime - $initialTime);
 
         if ( $this->_db ) {
@@ -206,7 +200,7 @@ class Profiler extends  PhalconProfiler {
             $activeProfile->setExtra($data);
         }
 
-        $this->allProfiles[] = $activeProfile;
+        $this->_allProfiles[] = $activeProfile;
 
         if (method_exists($this, "afterEndProfile")) {
             $this->afterEndProfile($activeProfile);

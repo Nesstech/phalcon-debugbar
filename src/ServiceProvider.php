@@ -12,7 +12,6 @@ use Phalcon\Http\Request;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Micro;
-use Phalcon\Mvc\Router\Route;
 use Phalcon\Version;
 use Snowair\Debugbar\Controllers\AssetController;
 use Snowair\Debugbar\Controllers\OpenHandlerController;
@@ -22,6 +21,7 @@ use Phalcon\Config\Adapter\Json;
 use Phalcon\Config\Adapter\Yaml;
 use Phalcon\Config;
 use Phalcon\DI\Injectable;
+use Snowair\Debugbar\Controllers\ToolsController;
 
 class ServiceProvider extends Injectable {
 
@@ -169,7 +169,6 @@ class ServiceProvider extends Injectable {
     {
         /** @var PhalconDebugbar $debugbar */
         $config   = $this->di['config.debugbar'];
-        /** @var Route $router */
         $router   = $this->di['router'];
         $debugbar = $this->di['debugbar'];
         /** @var Request $request */
@@ -181,10 +180,10 @@ class ServiceProvider extends Injectable {
                 $debugbar->disable();
                 return;
             }
-
-            $router->handle( $request->getURI());
-            $deny_routes  = (array)$config->get('deny_routes');
-            $allow_routes = (array)$config->get('allow_routes');
+            
+            $router->handle($_SERVER["REQUEST_URI"]);
+            $deny_routes = $config->get('deny_routes')->toArray();
+            $allow_routes = $config->get('allow_routes')->toArray();
 
             $current = $router->getMatchedRoute();
 
@@ -201,7 +200,7 @@ class ServiceProvider extends Injectable {
                         if($moudleName=$request->get('m')){
                             $this->dispatcher->setModuleName($moudleName);
                             $moudle=$this->di['app']->getModule($moudleName);
-                            require $moudle['path'];
+                            //require $moudle['path'];
                             $moduleObject=$this->di->get($moudle['className']);
                             $moduleObject->registerAutoloaders($this->di);
                             $moduleObject->registerServices($this->di);
@@ -214,12 +213,12 @@ class ServiceProvider extends Injectable {
                     return;
                 }
 
-                if( !empty($current) && !empty($allow_routes)  && !in_array( $current,$allow_routes ) ){
+                if(  !empty($allow_routes)  && !in_array( $current,$allow_routes ) ){
                     $debugbar->disable();
                     return;
                 }
 
-                if( !empty($current) && !empty($deny_routes)  && in_array( $current,$deny_routes )){
+                if( !empty($deny_routes)  && in_array( $current,$deny_routes )){
                     $debugbar->disable();
                     return;
                 }

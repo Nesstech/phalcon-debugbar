@@ -8,12 +8,12 @@
 namespace Snowair\Debugbar\Phalcon\Logger\Adapter;
 
 use Phalcon\Version;
-use Phalcon\Logger\Adapter;
-use Phalcon\Logger\AdapterInterface;
+use Phalcon\Logger\Adapter\AbstractAdapter;
+use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Formatter\Line;
 use Snowair\Debugbar\PhalconDebugbar;
 
-class Debugbar extends Adapter implements AdapterInterface{
+class Debugbar extends AbstractAdapter implements AdapterInterface{
 
 	/**
 	 * @var PhalconDebugbar $_debugbar
@@ -26,7 +26,6 @@ class Debugbar extends Adapter implements AdapterInterface{
 
 	protected function logInternal( $message, $type, $time, $context ) {
 		if ($this->_debugbar->hasCollector('log') && $this->_debugbar->shouldCollect('log') ) {
-			// Phalcon\Logger\Adapter::log方法调用logInternal时传入的时间精确到秒,精确度太低,因此此处提高精确度
 			$this->_debugbar->getCollector('log')->add($message,$type,microtime(true),$context);
 		}
 	}
@@ -42,7 +41,6 @@ class Debugbar extends Adapter implements AdapterInterface{
 
 	/**
 	 * Returns the internal formatter
-	 * @return \Phalcon\Logger\FormatterInterface
 	 */
 	public function getFormatter() {
 		if ( !is_object($this->_formatter) ){
@@ -58,4 +56,9 @@ class Debugbar extends Adapter implements AdapterInterface{
 	public function close() {
 		return true;
 	}
+	
+	public function process(\Phalcon\Logger\Item $item){
+	    
+	}
+
 }

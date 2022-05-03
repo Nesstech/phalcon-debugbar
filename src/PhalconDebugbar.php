@@ -17,6 +17,9 @@ use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DebugBar;
 use Exception;
+use Phalcon\Cache;
+use Phalcon\Db\Adapter\AbstractAdapter;
+use Phalcon\Db\Adapter\Pdo\AbstractPdo;
 use Phalcon\DI;
 use Phalcon\Events\Event;
 use Phalcon\Events\Manager;
@@ -25,7 +28,6 @@ use Phalcon\Http\Response;
 use Phalcon\Mvc\View\Engine\Volt;
 use Phalcon\Mvc\View\Simple;
 use Phalcon\Registry;
-use Phalcon\Storage\Adapter\AbstractAdapter as AbstractStorageAdapter;
 use Phalcon\Version;
 use Snowair\Debugbar\DataCollector\CacheCollector;
 use Snowair\Debugbar\DataCollector\ConfigCollector;
@@ -56,8 +58,7 @@ use Snowair\Debugbar\Storage\MongoDB;
  * @method void debug($message)
  * @method void log($message)
  */
-class PhalconDebugbar extends DebugBar
-{
+class PhalconDebugbar extends DebugBar {
 
     /**
      * @var  DI $di
@@ -65,7 +66,7 @@ class PhalconDebugbar extends DebugBar
     protected $di;
     protected $config;
     protected $booted = false;
-    public $isDebugbarRequest = false;
+    public    $isDebugbarRequest=false;
 
     public function __construct($di)
     {
@@ -80,13 +81,13 @@ class PhalconDebugbar extends DebugBar
      */
     public function enable()
     {
-        $this->config->enabled = true;
+        $this->config->enabled=true;
         return $this;
     }
 
     public function disable()
     {
-        $this->config->enabled = false;
+        $this->config->enabled=false;
     }
 
     /**
@@ -100,10 +101,10 @@ class PhalconDebugbar extends DebugBar
 
     public function shouldCollect($name, $default = false)
     {
-        return $this->config->collectors->get($name, $default);
+        return $this->config->collectors->get($name,$default);
     }
 
-    public function initCollectors()
+    public function initCollectors(  )
     {
         // only for normal request
         if ($this->shouldCollect('phpinfo', true)) {
@@ -119,7 +120,7 @@ class PhalconDebugbar extends DebugBar
             }
         }
         if ($this->shouldCollect('memory', true)) {
-            $mem = new MemoryCollector();
+            $mem=new MemoryCollector();
             if (!isset($this->collectors[$mem->getName()])) {
                 $this->addCollector($mem);
             }
@@ -144,10 +145,10 @@ class PhalconDebugbar extends DebugBar
             }
         }
         if ($this->shouldCollect('time', true)) {
-            if (defined('PHALCON_START')) {
+            if (defined('PHALCON_START')){
                 $startTime = PHALCON_START;
-            } else {
-                $startTime = isset($_SERVER["REQUEST_TIME_FLOAT"]) ? $_SERVER["REQUEST_TIME_FLOAT"] : $_SERVER["REQUEST_TIME"];
+            }else{
+                $startTime = isset($_SERVER["REQUEST_TIME_FLOAT"])?$_SERVER["REQUEST_TIME_FLOAT"]:$_SERVER["REQUEST_TIME"];
             }
             $timer = new TimeDataCollector($startTime);
             if (!isset($this->collectors[$timer->getName()])) {
@@ -173,8 +174,8 @@ class PhalconDebugbar extends DebugBar
         }
         if ($this->shouldCollect('log', false) && $this->di->has('log')) {
             $logs = new LogsCollector($this->di,
-                $this->config->options->log->get('aggregate', false),
-                $this->config->options->log->get('formatter', 'line')
+                $this->config->options->log->get('aggregate',false),
+                $this->config->options->log->get('formatter','line')
             );
             if (!isset($this->collectors[$logs->getName()])) {
                 $this->addCollector($logs);
@@ -188,23 +189,22 @@ class PhalconDebugbar extends DebugBar
     /**
      * 启动debugbar: 设置collector
      */
-    public function boot()
-    {
+    public function boot() {
 
-        if (!$this->isEnabled()) {
+        if (!$this->isEnabled() ) {
             return;
         }
 
         $debugbar = $this;
-        if (!$this->isDataPersisted()) {
+        if ( !$this->isDataPersisted() ) {
             $this->selectStorage($debugbar); // for normal request and debugbar request both
         }
         if ($this->booted) {
             return;
         }
         $this->booted = true;
-        if (isset($_REQUEST['_url']) and $_REQUEST['_url'] == '/favicon.ico'
-            || isset($_SERVER['REQUEST_URI']) and $_SERVER['REQUEST_URI'] == '/favicon.ico' || !$this->isEnabled()) {
+        if ( isset($_REQUEST['_url']) and $_REQUEST['_url']=='/favicon.ico'
+            || isset($_SERVER['REQUEST_URI']) and $_SERVER['REQUEST_URI']=='/favicon.ico'|| !$this->isEnabled()) {
             return;
         }
 
@@ -216,29 +216,29 @@ class PhalconDebugbar extends DebugBar
         $renderer->setAjaxHandlerAutoShow($this->config->get('ajax_handler_auto_show', true));
     }
 
-    public function attachServices()
-    {
+    public function attachServices() {
 
-        if (!$this->isEnabled()) {
+        if (!$this->isEnabled() ) {
             return;
         }
-
+        
         $services = array_keys($this->di->getServices());
-        foreach ($services as $name) {
-            if (stripos($name, 'cache') !== false) {
-                $this->attachCache($name);
+        
+        foreach ( $services as $name ) {
+            if ( stripos( $name, 'cache' )!==false ) {
+                $this->attachCache( $name );
             }
-            if (stripos($name, 'db') === 0 || strtolower(substr($name, -2)) == 'db') {
-                $this->attachDb($name);
+            if ( stripos($name,'db')===0 || strtolower(substr($name,-2)) =='db' ) {
+                $this->attachDb( $name );
             }
         }
-        if ($this->di->has('view')) {
-            $this->attachView($this->di['view']);
+        if ( $this->di->has( 'view' ) ) {
+            $this->attachView( $this->di['view'] );
         }
-        if ($this->shouldCollect('mail', true) && $this->di->has('mailer')) {
-            $this->attachMailer($this->di['mailer']);
+        if ($this->shouldCollect('mail', true) && $this->di->has('mailer') ) {
+            $this->attachMailer( $this->di['mailer'] );
         }
-        if ($this->shouldCollect('doctrine', false) && !$this->hasCollector('doctrine') && !$this->hasCollector('pdo')) {
+        if ($this->shouldCollect('doctrine', false) &&!$this->hasCollector('doctrine') && !$this->hasCollector('AbstractPdo') ) {
             $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
             $entityManager = $this->di['entityManager'];
             $entityManager->getConnection()->getConfiguration()->setSQLLogger($debugStack);
@@ -249,84 +249,80 @@ class PhalconDebugbar extends DebugBar
         }
     }
 
-    public function attachCache($cacheService)
-    {
-        static $mode, $collector, $hasAttachd = array();
-        if (in_array($cacheService, $hasAttachd)) {
+    public function attachCache($cacheService) {
+        static $mode,$collector,$hasAttachd = array();
+        if ( in_array( $cacheService, $hasAttachd ) ) {
             return;
         }
         $hasAttachd[] = $cacheService;
-        if (!$this->shouldCollect('cache', false)) {
+        if ( !$this->shouldCollect( 'cache',false ) ) {
             return;
         }
-        if (!is_string($cacheService)) {
+        if ( !is_string( $cacheService ) ) {
             throw new \Exception('The parameter must be a cache service name.');
         }
-        if (!$mode) {
-            $mode = $this->config->options->cache->get('mode', 0);
+        if ( !$mode ) {
+            $mode  = $this->config->options->cache->get('mode',0);
         }
-        if (!$collector) {
+        if ( !$collector ) {
             $mc = null;
-            if ($this->hasCollector('messages')) {
+            if ( $this->hasCollector( 'messages' ) ) {
                 $mc = $this->getCollector('messages');
             }
-            $collector = new CacheCollector($mode, $mc);
+            $collector = new CacheCollector($mode,$mc);
             $this->addCollector($collector);
         }
         $backend = $this->di->get($cacheService);
-        /*
-         * When detecting cache service, we must ensure it is not a decorator implementing
-         *  \Phalcon\Cache\Adapter\AdapterInterface, but rather an implementation (or abstract class) of the interface.
-         * Since the cache adapters' implementations extend their own storage adapter, we can assume that that is
-         *  the non-decorated implementation of cache adapter interface.
-         */
-        if ($backend instanceof AbstractStorageAdapter) {
-            if ($this->shouldCollect('cache', false)) {
+        if ($backend instanceof Cache) {
+            if ($this->shouldCollect('cache',false)) {
                 $this->di->remove($cacheService);
                 $self = $this;
-                $this->di->set($cacheService, function () use ($self, $backend, $collector) {
-                    return $self->createProxy(clone $backend, $collector);
+                $this->di->set($cacheService, function()use($self,$backend,$collector){
+                    return $self->createProxy(clone $backend,$collector);
                 });
             }
         }
     }
 
-    protected function createProxy($backend, $collector)
-    {
+    protected function createProxy( $backend,$collector ) {
         $base_class = get_class($backend);
-        $prefix = ltrim(strrchr($base_class, '\\'), '\\');
-        $namespace = __NAMESPACE__ . '\\Phalcon\\Cache';
-        $classname = $prefix . 'Proxy';
-        $full_class = $namespace . '\\' . $classname;
+        $prefix = ltrim(strrchr($base_class,'\\'),'\\');
+        $namespace = __NAMESPACE__ .'\\Phalcon\\Cache';
+        $classname = $prefix.'Proxy';
+        $full_class = $namespace.'\\'.$classname;
         if (!class_exists($full_class)) {
-            $class = <<<PROXY_CLASS
+            $class =<<<NEWCLASS
 namespace $namespace;
 
 class $classname extends \\$base_class
 {
 	use ProxyTrait;
+	
+	public function __construct(\$backend,\$collector ) {
+		\$this->_collector = \$collector;
+		\$this->_backend = \$backend;
+	}
 }
-PROXY_CLASS;
+NEWCLASS;
             eval($class);
         }
-        return new $full_class($backend, $collector);
+        return new $full_class($backend,$collector);
     }
 
-    public function attachMailer($mailer)
-    {
-        if (!$this->shouldCollect('mail', false)) {
+    public function attachMailer( $mailer ) {
+        if (!$this->shouldCollect('mail', false)  ) {
             return;
         }
         static $started;
-        if (!$started) {
+        if ( !$started ) {
             $started = true;
-            if (is_string($mailer)) {
+            if ( is_string( $mailer ) ) {
                 $mailer = $this->di[$mailer];
             }
             try {
-                if (class_exists('\Swifit_Mailer') && ($mailer instanceof \Swift_Mailer)) {
+                if ( class_exists('\Swifit_Mailer') && ( $mailer instanceof \Swift_Mailer ) ) {
                     $this->addCollector(new SwiftMailCollector($mailer));
-                    if ($this->config->options->mail->get('full_log', false) and $this->hasCollector(
+                    if ($this->config->options->mail->get('full_log',false) and $this->hasCollector(
                             'messages'
                         )
                     ) {
@@ -348,29 +344,29 @@ PROXY_CLASS;
      *
      * @throws \DebugBar\DebugBarException
      */
-    public function attachView($view)
+    public function attachView( $view )
     {
         // You can add only One View instance
-        if (isset($this->collectors['views'])) {
+        if ( isset($this->collectors['views']) ) {
             return;
         }
-        if (is_string($view)) {
+        if ( is_string( $view ) ) {
             $view = $this->di[$view];
         }
 
         // try to add PhalconDebugbar VoltFunctions
-        $engins = $view->getRegisteredEngines();
-        if (isset($engins['.volt'])) {
+        $engins =$view->getRegisteredEngines();
+        if ( isset($engins['.volt']) ) {
             $volt = $engins['.volt'];
-            if (is_object($volt)) {
-                if ($volt instanceof \Closure) {
-                    $volt = $volt($view, $this->di);
+            if ( is_object( $volt ) ) {
+                if ( $volt instanceof \Closure ) {
+                    $volt = $volt($view,$this->di);
                 }
-            } elseif (is_string($volt)) {
-                if (class_exists($volt)) {
-                    $volt = new Volt($view, $this->di);
-                } elseif ($this->di->has($volt)) {
-                    $volt = $this->di->getShared($volt, array($view, $this->di));
+            }elseif(is_string($volt)){
+                if ( class_exists( $volt ) ) {
+                    $volt = new Volt( $view, $this->di );
+                }elseif( $this->di->has($volt)){
+                    $volt = $this->di->getShared($volt,array($view,$this->di));
                 }
             }
             $engins['.volt'] = $volt;
@@ -379,64 +375,81 @@ PROXY_CLASS;
         }
 
         // attach the ViewCollector
-        if (!$this->shouldCollect('view', true)) {
+        if ( !$this->shouldCollect('view', true) ) {
             return;
         }
 
         $viewProfiler = new Registry();
-        $viewProfiler->templates = array();
+        $viewProfiler->templates=array();
         $viewProfiler->engines = $view->getRegisteredEngines();
         $config = $this->config;
 
         $eventsManager = $view->getEventsManager();
-        if (!is_object($eventsManager)) {
+        if ( !is_object( $eventsManager ) ) {
             $eventsManager = new Manager();
         }
 
-        $eventsManager->attach('view:beforeRender', function ($event, $view) use ($viewProfiler) {
-            $viewProfiler->startRender = microtime(true);
+        $eventsManager->attach('view:beforeRender',function($event,$view) use($viewProfiler)
+        {
+            $viewProfiler->startRender= microtime(true);
 
         });
-        $eventsManager->attach('view:afterRender', function ($event, $view) use ($viewProfiler, $config) {
-            $viewProfiler->stopRender = microtime(true);
-            if ($config->options->views->get('data', false)) {
+        $eventsManager->attach('view:afterRender',function($event,$view) use($viewProfiler,$config)
+        {
+            $viewProfiler->stopRender= microtime(true);
+            if ( $config->options->views->get( 'data', false ) ) {
                 $viewProfiler->params = $view->getParamsToView();
-            } else {
+            }else{
                 $viewProfiler->params = null;
             }
         });
-        $eventsManager->attach('view:beforeRenderView', function ($event, $view) use ($viewProfiler) {
+        $eventsManager->attach('view:beforeRenderView',function($event,$view) use($viewProfiler)
+        {
             $viewFilePath = $view->getActiveRenderPath();
-            if (Version::getId() >= 2000140) {
-                if (!$view instanceof \Phalcon\Mvc\ViewInterface && $view instanceof \Phalcon\Mvc\ViewBaseInterface) {
-                    $viewFilePath = realpath($view->getViewsDir()) . DIRECTORY_SEPARATOR . $viewFilePath;
+            if (Version::getId()>=2000140) {
+                if ( !$view instanceof \Phalcon\Mvc\ViewInterface && $view instanceof \Phalcon\Mvc\ViewBaseInterface) {
+                    $viewFilePath = realpath($view->getViewsDir()).DIRECTORY_SEPARATOR.$viewFilePath;
                 }
-            } elseif ($view instanceof Simple) {
-                $viewFilePath = realpath($view->getViewsDir()) . DIRECTORY_SEPARATOR . $viewFilePath;
+            }elseif( $view instanceof Simple){
+                $viewFilePath = realpath($view->getViewsDir()).DIRECTORY_SEPARATOR.$viewFilePath;
             }
 
             $templates = $viewProfiler->templates;
-            $templates[$viewFilePath]['startTime'] = microtime(true);
-            $viewProfiler->templates = $templates;
+            if(is_array($viewFilePath)){
+                foreach($viewFilePath as $infos_path){
+                    $templates[$infos_path]['startTime'] = microtime(true);
+                }
+            }else{
+                $templates[$viewFilePath]['startTime'] = microtime(true);
+            }
+            $viewProfiler->templates =  $templates;
         });
-        $eventsManager->attach('view:afterRenderView', function ($event, $view) use ($viewProfiler) {
+        $eventsManager->attach('view:afterRenderView',function($event,$view) use($viewProfiler)
+        {
             $viewFilePath = $view->getActiveRenderPath();
-            if (Version::getId() >= 2000140) {
-                if (!$view instanceof \Phalcon\Mvc\ViewInterface && $view instanceof \Phalcon\Mvc\ViewBaseInterface) {
-                    $viewFilePath = realpath($view->getViewsDir()) . DIRECTORY_SEPARATOR . $viewFilePath;
+            if (Version::getId()>=2000140) {
+                if ( !$view instanceof \Phalcon\Mvc\ViewInterface && $view instanceof \Phalcon\Mvc\ViewBaseInterface) {
+                    $viewFilePath = realpath($view->getViewsDir()).DIRECTORY_SEPARATOR.$viewFilePath;
                 }
-            } elseif ($view instanceof Simple) {
-                $viewFilePath = realpath($view->getViewsDir()) . DIRECTORY_SEPARATOR . $viewFilePath;
+            }elseif( $view instanceof Simple){
+                $viewFilePath = realpath($view->getViewsDir()).DIRECTORY_SEPARATOR.$viewFilePath;
             }
 
-            $templates = $viewProfiler->templates;
-            $templates[$viewFilePath]['stopTime'] = microtime(true);
-            $viewProfiler->templates = $templates;
+            $templates = $viewProfiler->templates;            
+            if(is_array($viewFilePath)){
+                foreach($viewFilePath as $infos_path){
+                    $templates[$infos_path]['startTime'] = microtime(true);
+                }
+            }else{
+                $templates[$viewFilePath]['startTime'] = microtime(true);
+            }
+            
+            $viewProfiler->templates =  $templates;
 
         });
         $view->setEventsManager($eventsManager);
 
-        $collector = new ViewCollector($viewProfiler, $view);
+        $collector = new ViewCollector($viewProfiler,$view);
         $this->addCollector($collector);
     }
 
@@ -447,19 +460,19 @@ PROXY_CLASS;
     {
         $config = $this->config;
         if ($config->storage->enabled) {
-            $driver = $config->storage->get('driver', 'file');
-            if ($driver == 'mongodb') {
+            $driver = $config->storage->get('driver','file');
+            if ($driver=='mongodb') {
                 $connection = $config->storage->mongodb->connection;
-                $db = $config->storage->mongodb->db;
+                $db         = $config->storage->mongodb->db;
                 $collection = $config->storage->mongodb->collection;
-                $options = $config->storage->mongodb->options;
+                $options    = $config->storage->mongodb->options;
                 $dirveropts = $config->storage->mongodb->driver_options;
-                $storage = new MongoDB($this->di, $connection, $db, $collection, $options, $dirveropts);
-            } elseif ($driver == 'elastic') {
-                $storage = new ElasticSearch($this->di, $config->storage->elastic);
+                $storage    = new MongoDB( $this->di, $connection, $db, $collection, $options,$dirveropts );
+            }elseif ($driver=='elastic') {
+                $storage    = new ElasticSearch( $this->di,$config->storage->elastic );
             } else {
-                $path = $config->storage->path;
-                $storage = new Filesystem($path, $this->di);
+                $path    = $config->storage->path;
+                $storage = new Filesystem( $path, $this->di );
             }
 
             $debugbar->setStorage($storage);
@@ -527,7 +540,7 @@ PROXY_CLASS;
      * Returns a JavascriptRenderer for this instance
      *
      * @param string $baseUrl
-     * @param null $basePath
+     * @param null   $basePath
      *
      * @return JsRender
      */
@@ -541,16 +554,15 @@ PROXY_CLASS;
     }
 
     /**
-     * @param Response $response
+     * @param  Response $response
      *
      * @return mixed
      * @throws Exception
      */
-    public function modifyResponse($response)
-    {
-        $config = $this->config;
+    public function modifyResponse($response){
+        $config  = $this->config;
 
-        if (!$this->isEnabled()) {
+        if (!$this->isEnabled() ) {
             return $response;
         }
 
@@ -572,7 +584,7 @@ PROXY_CLASS;
             }
         }
 
-        if ($this->shouldCollect('session') && $this->di->has('session')) {
+        if ($this->shouldCollect('session')   && $this->di->has('session') ) {
             try {
                 $this->addCollector(new SessionCollector($this->di['session']));
             } catch (\Exception $e) {
@@ -588,7 +600,7 @@ PROXY_CLASS;
 
         if ($this->shouldCollect('phalcon_request', true) and !$this->hasCollector('request')) {
             try {
-                $this->addCollector(new PhalconRequestCollector($this->di['request'], $response, $this->di));
+                $this->addCollector(new PhalconRequestCollector($this->di['request'],$response,$this->di));
             } catch (\Exception $e) {
                 $this->addException(
                     new Exception(
@@ -600,13 +612,13 @@ PROXY_CLASS;
             }
         }
 
-        if ($this->hasCollector('pdo')) {
+        if( $this->hasCollector('AbstractPdo') ){
             /** @var Profiler $profiler */
-            $profiler = $this->getCollector('pdo')->getProfiler();
+            $profiler = $this->getCollector('AbstractPdo')->getProfiler();
             $profiler->handleFailed();
         }
 
-        if ($this->isDebugbarRequest) {
+        if ( $this->isDebugbarRequest ) {
             // Notice: All Collectors must be added before check if is debugbar request.
             return $response;
         }
@@ -614,7 +626,9 @@ PROXY_CLASS;
         try {
             if ($this->isRedirection($response)) {
                 $this->stackData();
-            } elseif ($this->isJsonRequest() && $config->get('capture_ajax', true)) {
+            }
+            elseif ( $this->isJsonRequest() && $config->get('capture_ajax', true) )
+            {
                 $this->sendDataInHeaders(true);
             } elseif (
                 ($content_type = $response->getHeaders()->get('Content-Type'))
@@ -622,23 +636,18 @@ PROXY_CLASS;
                 strpos($response->getHeaders()->get('Content-Type'), 'html') !== false
                 && $config->get('inject', true)
             ) {
-                $response->setHeader('Phalcon-Debugbar', 'on');
+                $response->setHeader('Phalcon-Debugbar','on');
                 $this->injectDebugbar($response);
             } elseif (
                 ($content_type = $response->getHeaders()->get('Content-Type'))
                 &&
                 strpos($response->getHeaders()->get('Content-Type'), 'html') === false
             ) {
-                $data = $this->collect();
-                $content = json_decode($response->getContent(), true);
-                if (!is_null($content)) {
-                    $data = array_merge($data, $content);
-                    $response->setContent(json_encode($data));
-                }
-            } elseif ($config->get('inject', true)) {
-                $response->setHeader('Phalcon-Debugbar', 'on');
+                $this->collect();
+            } elseif($config->get('inject', true)) {
+                $response->setHeader('Phalcon-Debugbar','on');
                 $this->injectDebugbar($response);
-            } else {
+            }else{
                 $this->collect();
             }
         } catch (\Exception $e) {
@@ -654,27 +663,26 @@ PROXY_CLASS;
     /**
      * @param Adapter $db
      */
-    public function attachDb($db)
-    {
-        if ($this->shouldCollect('db', true)) {
-            static $profiler, $eventsManager, $queryCollector;
+    public function attachDb( $db ) {
+        if ($this->shouldCollect('db', true)  ) {
+            static $profiler,$eventsManager,$queryCollector;
             $config = $this->config;
-            if (!$profiler) {
+            if ( !$profiler ) {
                 $profiler = new Profiler();
             }
             try {
-                if (!$queryCollector) {
-                    $queryCollector = new QueryCollector($profiler);
-                    if ($config->options->db->get('with_params', false)) {
+                if ( !$queryCollector ) {
+                    $queryCollector = new QueryCollector($profiler);                    
+                    if ( $config->options->db->get( 'with_params', false ) ) {
                         $queryCollector->setRenderSqlWithParams();
                     }
-                    if ($config->options->db->backtrace) {
-                        $queryCollector->setFindSource(true);
+                    if ( $config->options->db->backtrace ) {
+                        $queryCollector->setFindSource( true );
                     }
-                    if ($config->options->db->get('show_conn', false)) {
-                        $queryCollector->setShowConnection(true);
+                    if ( $config->options->db->get('show_conn',false) ) {
+                        $queryCollector->setShowConnection( true );
                     }
-                    if ($config->options->db->get('explain', false)) {
+                    if ( $config->options->db->get( 'explain', false ) ) {
                         $profiler->setExplainQuery(true);
                     }
                     $this->addCollector($queryCollector);
@@ -688,28 +696,27 @@ PROXY_CLASS;
                     )
                 );
             }
-            if (is_string($db)) {
+            if ( is_string( $db ) ) {
                 $db = $this->di[$db];
             }
+            
             $pdo = $db->getInternalHandler();
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, $config->options->db->error_mode);
-            if (!$eventsManager) {
+            if ( !$eventsManager ) {
 
                 $eventsManager = $db->getEventsManager();
-                if (!is_object($eventsManager)) {
+                if ( !is_object( $eventsManager ) ) {
                     $eventsManager = new Manager();
                 }
-                $eventsManager->attach('db', function (Event $event, $db, $params) use (
-                    $profiler,
-                    $queryCollector
+                $eventsManager->attach('db', function(Event $event, AbstractAdapter $db, $params) use (
+                    $profiler,$queryCollector
                 ) {
                     $profiler->setDb($db);
                     if ($event->getType() == 'beforeQuery') {
-                        $sql = $db->getRealSQLStatement();
+                        $sql = $db->getSQLStatement();
                         $bindTypes = $db->getSQLBindTypes();
-                        if (stripos(strtr($sql, [' ' => '']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`') === false
-                            && stripos($sql, 'DESCRIBE') !== 0) {
-                            $profiler->startProfile($sql, $params, $bindTypes);
+                        if ( stripos( strtr($sql,[' '=>'']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`' ) === false && stripos( $sql, 'DESCRIBE') !== 0 && stripos( $sql, 'SHOW FULL COLUMNS FROM') !== 0) {
+                            $profiler->startProfile($sql,$params,$bindTypes);
                             if ($queryCollector->getFindSource()) {
                                 try {
                                     $source = $queryCollector->findSource();
@@ -720,9 +727,8 @@ PROXY_CLASS;
                         }
                     }
                     if ($event->getType() == 'afterQuery') {
-                        $sql = $db->getRealSQLStatement();
-                        if (stripos(strtr($sql, [' ' => '']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`') === false
-                            && stripos($sql, 'DESCRIBE') !== 0) {
+                        $sql = $db->getSQLStatement();
+                        if ( stripos( strtr($sql,[' '=>'']), 'SELECTIF(COUNT(*)>0,1,0)FROM`INFORMATION_SCHEMA`.`TABLES`' ) === false && stripos( $sql, 'DESCRIBE') !== 0 && stripos( $sql, 'SHOW FULL COLUMNS FROM') !== 0) {
                             $profiler->stopProfile();
                         }
                     }
@@ -737,10 +743,9 @@ PROXY_CLASS;
      *
      * @return bool
      */
-    public function isRedirection($response)
-    {
+    public function isRedirection($response) {
         $status = $response->getHeaders()->get('Status');
-        $code = (int)strstr($status, ' ', true);
+        $code   = (int)strstr($status,' ',true);
         return $code >= 300 && $code < 400;
     }
 
@@ -799,7 +804,7 @@ PROXY_CLASS;
 
         $renderer = $this->getJavascriptRenderer();
 
-        $openHandlerUrl = $this->di['url']->getStatic(array('for' => 'debugbar.openhandler'));
+        $openHandlerUrl = $this->di['url']->getStatic( array('for'=>'debugbar.openhandler') );
         $renderer->setOpenHandlerUrl($openHandlerUrl);
 
 
@@ -832,6 +837,7 @@ PROXY_CLASS;
     }
 
 
+
     /**
      * Adds a measure
      *
@@ -848,18 +854,17 @@ PROXY_CLASS;
         }
     }
 
-    public function addMeasurePoint($label, $start = null)
-    {
+    public function addMeasurePoint( $label , $start =null ) {
         if ($this->hasCollector('time')) {
             /** @var \DebugBar\DataCollector\TimeDataCollector $collector */
             $collector = $this->getCollector('time');
-            if (!$start && $measures = $collector->getMeasures()) {
+            if ( !$start && $measures = $collector->getMeasures() ) {
                 $latest = end($measures);
                 $start = $latest['end'];
-            } elseif (defined('PHALCON_START')) {
+            }elseif (defined('PHALCON_START')){
                 $start = PHALCON_START;
-            } else {
-                $start = isset($_SERVER["REQUEST_TIME_FLOAT"]) ? $_SERVER["REQUEST_TIME_FLOAT"] : $_SERVER["REQUEST_TIME"];
+            }else{
+                $start = isset($_SERVER["REQUEST_TIME_FLOAT"])?$_SERVER["REQUEST_TIME_FLOAT"]:$_SERVER["REQUEST_TIME"];
             }
             $collector->addMeasure($label, $start, microtime(true));
         }
@@ -899,11 +904,10 @@ PROXY_CLASS;
         }
     }
 
-    public function sortCollectors()
-    {
+    public function sortCollectors() {
         // move message collectors to end, so other collectors can add message to it at the end time.
         $this->collectors;
-        if (isset($this->collectors['messages'])) {
+        if ( isset($this->collectors['messages']) ) {
             $m = $this->collectors['messages'];
             $t = $this->collectors['time'];
             unset($this->collectors['messages']);
@@ -924,7 +928,7 @@ PROXY_CLASS;
     {
         $messageLevels = array('emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug', 'log');
         if (in_array($method, $messageLevels)) {
-            foreach ($args as $arg) {
+            foreach($args as $arg) {
                 $this->addMessage($arg, strtoupper($method));
             }
         }

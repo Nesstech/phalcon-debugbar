@@ -10,11 +10,9 @@ namespace Snowair\Debugbar\DataCollector;
 
 use Monolog\Logger;
 use Phalcon\DI;
-use Phalcon\Logger\Adapter;
+use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Formatter\Line;
-use Phalcon\Logger\Formatter\Syslog;
-use Phalcon\Logger\FormatterInterface;
-use Phalcon\Logger\Multiple;
+use Phalcon\Logger\Formatter\FormatterInterface;
 use Psr\Log\LoggerInterface;
 use Snowair\Debugbar\Phalcon\Logger\Adapter\Debugbar;
 use Snowair\Debugbar\PhalconDebugbar;
@@ -45,37 +43,34 @@ class LogsCollector extends MessagesCollector{
 		$this->_debugbar = $this->_di['debugbar'];
 		$this->_formatter = strtolower($formatter);
 		if ( $di->has('log') && $log = $di->get('log') ) {
-			$debugbar_loger = new Debugbar($di['debugbar']);
-			if ( $log instanceof Adapter ) {
-                $di->remove('log');
-				$multiple = new Multiple();
-				$multiple->push( clone $log );
-				$multiple->push( $debugbar_loger );
-				/** @var DI\Service $service */
-				$di->set('log',$multiple);
-			}elseif($log instanceof Multiple){
-				$log->push( $debugbar_loger );
-			}elseif( class_exists('Monolog\Logger') && $log instanceof Logger ){
-				$handler = new \Snowair\Debugbar\Monolog\Handler\Debugbar($this->_debugbar);
-				$log->pushHandler($handler);
-			}
-
+//			$debugbar_loger = new Debugbar($di['debugbar']);
+// 			if ( $log instanceof AbstractAdapter) {
+//                 $di->remove('log');
+// 				$multiple = new Multiple();
+// 				$multiple->push( clone $log );
+// 				$multiple->push( $debugbar_loger );
+// 				/** @var DI\Service $service */
+// 				$di->set('log',$multiple);
+// 			}elseif($log instanceof Multiple){
+// 				$log->push( $debugbar_loger );
+// 			}elseif( class_exists('Monolog\Logger') && $log instanceof Logger ){
+// 				$handler = new \Snowair\Debugbar\Monolog\Handler\Debugbar($this->_debugbar);
+// 				$log->pushHandler($handler);
+// 			}
 			$this->_aggregate = $this->isAggregate($aggregate);
 		}
 	}
 
 	public function add( $message, $type, $time, $context ) {
 		$debugbar = $this->_di['debugbar'];
-		if ( is_scalar($message) && $this->_formatter=='syslog' && $formatter = new Syslog ) {
+		if ( is_scalar($message) && $this->_formatter=='syslog' && $formatter = new Line ) {
 			$message = $formatter->format($message,$type,$time,$context);
 			$message = $message[1];
 		}elseif( is_scalar($message) && $this->_formatter=='line' && $formatter = new Line){
 			$message = $formatter->format($message,$type,$time,$context);
-		}elseif( class_exists($this->_formatter) ){
+		}elseif( class_exists($this->_formatter) && $this->_formatter instanceof FormatterInterface ){
 			$formatter = new $this->_formatter;
-			if ($this->_formatter instanceof FormatterInterface) {
-  			    $message = $formatter->format($message,$type,$time,$context);
-			}
+			$message = $formatter->format($message,$type,$time,$context);
 		}
 		if ( $this->_aggregate ) {
 			/** @var MessagesCollector $message_collector */

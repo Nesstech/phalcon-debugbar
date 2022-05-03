@@ -12,8 +12,8 @@ use Phalcon\Forms\Element;
 use Phalcon\Forms\Form;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\Model\Resultset\Complex;
-use Phalcon\Validation\Message;
-use Phalcon\Validation\Message\Group;
+use Phalcon\Messages\Message;
+use Phalcon\Messages\Messages;
 
 trait Formatter  {
 
@@ -62,7 +62,7 @@ trait Formatter  {
 			if ( $var instanceof Message ) {
 				return $this->_getMessage( $var );
 			}
-			if ( $var instanceof Group ) {
+			if ( $var instanceof Messages) {
 				return $this->_getMessages( $var );
 			}
 		}
@@ -84,7 +84,7 @@ trait Formatter  {
 
 	protected function _getMessages( $messages ) {
 		$array =[];
-		if ( $messages instanceof Group ) {
+		if ( $messages instanceof Messages ) {
 			foreach ( $messages as $m ) {
 				$array[] = array_filter($this->_getMessage($m));
 			}
@@ -135,7 +135,7 @@ trait Formatter  {
 		$vars = $this->_preformat($vars);
 		if ( is_object( $vars ) ) {
 			$class = get_class($vars);
-			$prefix = '['. $class .'] Converted To: ';
+			$prefix = '['. $class .'] Convertd To : ';
 			if ( method_exists( $vars, 'toArray' ) ) {
 				@$vars = $prefix. $formatter->formatVar($vars->toArray());
 			}else if ( $vars instanceof \StdClass ) {
