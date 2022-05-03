@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Alistar\\Debugbar\\": "src/"
+            "Snowair\\Debugbar\\": "src/"
         },
         "files":[
           "src/Debug.php"
