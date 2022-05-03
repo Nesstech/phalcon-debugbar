@@ -1,5 +1,5 @@
 {
-    "name": "alistar84/phalcon-debugbar",
+    "name": "alistar/phalcon-debugbar",
     "description": "Integrates PHP Debug Bar with Phalcon.",
     "type": "library",
     "keywords": ["phalcon", "debugbar", "profiler", "debug", "webprofiler"],
@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Alistar84\\Debugbar\\": "src/"
+            "Alistar\\Debugbar\\": "src/"
         },
         "files":[
           "src/Debug.php"
@@ -20,7 +20,7 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "alistar84"
+            "name": "alistar"
         }
     ],
     "minimum-stability": "dev"
