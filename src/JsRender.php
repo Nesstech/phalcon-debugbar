@@ -9,7 +9,7 @@ namespace Snowair\Debugbar;
 
 use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
-use Phalcon\Di;
+use Phalcon\Di\Di;
 use Phalcon\Dispatcher;
 use Phalcon\Mvc\Application;
 
@@ -42,7 +42,7 @@ class JsRender extends JavascriptRenderer{
 
         $time=time();
         $html = '';
-        $di=Di::getDefault();
+        $di= Di::getDefault();
         /** @var Dispatcher $dispatcher */
         $app = $di['app'];
         if (  $app instanceof Application ) {
@@ -58,7 +58,8 @@ class JsRender extends JavascriptRenderer{
             $m='';
         }
 
-        $baseuri = rtrim($this->url->getBasePath(),'/').'/';
+        $basePath = $this->url->getBasePath();
+        $baseuri = (!empty($basePath) ? rtrim($basePath,'/') : '').'/';
         $html .= sprintf(
             '<link rel="stylesheet" type="text/css" href="%s?m='.$m.'&%s">' . "\n",
             $baseuri.ltrim($this->url->getStatic(array('for'=>'debugbar.assets.css')),'/'),$time
