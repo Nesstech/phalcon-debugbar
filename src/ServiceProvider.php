@@ -185,13 +185,12 @@ class ServiceProvider extends Injectable {
             $router->handle($_SERVER["REQUEST_URI"]);
             $deny_routes = $config->get('deny_routes')->toArray();
             $allow_routes = $config->get('allow_routes')->toArray();
-
-            $current = $router->getMatchedRoute();
-
+			
+			$current = $router->getMatchedRoute();
             if (is_object( $current )) {
                 $current = $current->getName();
 
-                if ( strpos($current,'debugbar')===0 ) {
+                if(empty($current) || strpos($current,'debugbar')===0){
                     $app = $this->di['app'];
                     if (method_exists( $app, 'useImplicitView' )) {
                         $app->useImplicitView(false);
