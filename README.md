@@ -7,12 +7,12 @@ Integrates [PHP Debug Bar](https://github.com/maximebf/php-debugbar) with [Phalc
 * install (Phalcon5)
 
     ```
-    composer require --dev alistar84/phalcon-debugbar >5.0.0
+    composer require --dev alistar84/phalcon-debugbar
     ```
 * install (Phalcon4)
 
     ```
-    composer require --dev alistar84/phalcon-debugbar >1.2.7
+    composer require --dev alistar84/phalcon-debugbar 1.2.7
     ```
 * update
 
