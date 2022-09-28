@@ -5,7 +5,7 @@
  * Time: 20:50
  */
 
-use Phalcon\Di;
+use Phalcon\Di\Di;
 
 class PhalconDebug{
 

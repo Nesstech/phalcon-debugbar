@@ -8,7 +8,7 @@
 namespace Snowair\Debugbar\Phalcon\Db;
 
 use Phalcon\Db\Adapter\AbstractAdapter;
-use Phalcon\Version;
+use Phalcon\Support\Version;
 use Phalcon\Db\Column;
 use \Phalcon\Db\Profiler as PhalconProfiler;
 use Snowair\Debugbar\Phalcon\Db\Profiler\Item;
@@ -106,8 +106,9 @@ class Profiler extends  PhalconProfiler {
         $pdo = $this->_db->getInternalHandler();
         $indexes = array();
         $keys    = array();
+        $version = new Version();
         foreach ( $variables as $key=> $value ) {
-            if (is_array( $value ) && Version::getId()>=2000440) {
+            if (is_array( $value ) && $version->getId()>=2000440) {
                 foreach ($value as $k => $v) {
                     $keys[':'.$key.$k]=$pdo->quote($v);
                 }

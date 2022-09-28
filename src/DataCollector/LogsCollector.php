@@ -9,10 +9,11 @@ namespace Snowair\Debugbar\DataCollector;
 
 
 use Monolog\Logger;
-use Phalcon\DI;
+use Phalcon\DI\Di;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Formatter\Line;
 use Phalcon\Logger\Formatter\FormatterInterface;
+use Phalcon\Logger\Item;
 use Psr\Log\LoggerInterface;
 use Snowair\Debugbar\Phalcon\Logger\Adapter\Debugbar;
 use Snowair\Debugbar\PhalconDebugbar;
@@ -64,10 +65,12 @@ class LogsCollector extends MessagesCollector{
 	public function add( $message, $type, $time, $context ) {
 		$debugbar = $this->_di['debugbar'];
 		if ( is_scalar($message) && $this->_formatter=='syslog' && $formatter = new Line ) {
-			$message = $formatter->format($message,$type,$time,$context);
+			$item = new Item($message, $type, $time, $context);
+			$message = $formatter->format($item);
 			$message = $message[1];
 		}elseif( is_scalar($message) && $this->_formatter=='line' && $formatter = new Line){
-			$message = $formatter->format($message,$type,$time,$context);
+			$item = new Item($message, $type, $time, $context);
+			$message = $formatter->format($item);
 		}elseif( class_exists($this->_formatter) && $this->_formatter instanceof FormatterInterface ){
 			$formatter = new $this->_formatter;
 			$message = $formatter->format($message,$type,$time,$context);

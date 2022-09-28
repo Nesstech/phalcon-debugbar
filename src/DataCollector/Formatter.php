@@ -7,7 +7,7 @@
 
 namespace Snowair\Debugbar\DataCollector;
 
-use Phalcon\Db\Result\Pdo;
+use Phalcon\Db\Result\ResultPdo;
 use Phalcon\Forms\Element;
 use Phalcon\Forms\Form;
 use Phalcon\Mvc\Model;
@@ -39,7 +39,7 @@ trait Formatter  {
 				$clone->setHydrateMode(Complex::HYDRATE_ARRAYS);
 				return $clone;
 			}
-			if ($var instanceof Pdo || $var instanceof \PDOStatement) {
+			if ($var instanceof ResultPdo || $var instanceof \PDOStatement) {
 				$clone = clone $var;
 				$clone->setFetchMode(\Pdo::FETCH_ASSOC);
 				return $clone->fetchAll();

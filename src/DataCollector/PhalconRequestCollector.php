@@ -11,7 +11,7 @@ namespace Snowair\Debugbar\DataCollector;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\DataCollector\Renderable;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Support\Version;

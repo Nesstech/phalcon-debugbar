@@ -7,8 +7,6 @@
 
 namespace Snowair\Debugbar\Phalcon\View;
 
-use Phalcon\DI;
-
 class VoltFunctions {
 
 	protected $di;

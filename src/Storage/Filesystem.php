@@ -8,7 +8,7 @@
 namespace Snowair\Debugbar\Storage;
 
 use DebugBar\Storage\StorageInterface;
-use Phalcon\Di;
+use Phalcon\Di\Di;
 
 class Filesystem implements  StorageInterface
 {

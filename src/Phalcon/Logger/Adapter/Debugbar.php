@@ -7,7 +7,7 @@
 
 namespace Snowair\Debugbar\Phalcon\Logger\Adapter;
 
-use Phalcon\Version;
+use Phalcon\Support\Version;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Formatter\Line;
@@ -31,7 +31,8 @@ class Debugbar extends AbstractAdapter implements AdapterInterface{
 	}
 
     public function log($type, $message = NULL, array $context = NULL){
-        if (Version::getId()<'2000000') {
+		$version = new Version();
+        if ($version->getId()<'2000000') {
             $this->logInternal($type,$message,microtime(true),$context);
         }else{
             $this->logInternal($message,$type,microtime(true),$context);

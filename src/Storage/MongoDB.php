@@ -8,7 +8,6 @@
 namespace Snowair\Debugbar\Storage;
 
 use DebugBar\Storage\StorageInterface;
-use Phalcon\Exception;
 
 class MongoDB implements StorageInterface
 {

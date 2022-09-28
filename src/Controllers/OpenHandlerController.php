@@ -8,9 +8,8 @@
 namespace Snowair\Debugbar\Controllers;
 
 use DebugBar\OpenHandler;
-use Phalcon\Config;
+use Phalcon\Config\Config;
 use Phalcon\Http\Response;
-use Phalcon\Http\Request\Exception;
 use Snowair\Debugbar\PhalconDebugbar;
 
 /**

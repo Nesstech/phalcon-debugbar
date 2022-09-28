@@ -17,18 +17,17 @@ use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DebugBar;
 use Exception;
-use Phalcon\Cache;
+use Phalcon\Cache\Cache;
 use Phalcon\Db\Adapter\AbstractAdapter;
-use Phalcon\Db\Adapter\Pdo\AbstractPdo;
-use Phalcon\DI;
+use Phalcon\DI\Di;
 use Phalcon\Events\Event;
 use Phalcon\Events\Manager;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Mvc\View\Engine\Volt;
 use Phalcon\Mvc\View\Simple;
-use Phalcon\Registry;
-use Phalcon\Version;
+use Phalcon\Support\Registry;
+use Phalcon\Support\Version;
 use Snowair\Debugbar\DataCollector\CacheCollector;
 use Snowair\Debugbar\DataCollector\ConfigCollector;
 use Snowair\Debugbar\DataCollector\LogsCollector;
@@ -406,7 +405,8 @@ NEWCLASS;
         $eventsManager->attach('view:beforeRenderView',function($event,$view) use($viewProfiler)
         {
             $viewFilePath = $view->getActiveRenderPath();
-            if (Version::getId()>=2000140) {
+            $version = new Version();
+            if ($version->getId()>=2000140) {
                 if ( !$view instanceof \Phalcon\Mvc\ViewInterface && $view instanceof \Phalcon\Mvc\ViewBaseInterface) {
                     $viewFilePath = realpath($view->getViewsDir()).DIRECTORY_SEPARATOR.$viewFilePath;
                 }
@@ -427,7 +427,8 @@ NEWCLASS;
         $eventsManager->attach('view:afterRenderView',function($event,$view) use($viewProfiler)
         {
             $viewFilePath = $view->getActiveRenderPath();
-            if (Version::getId()>=2000140) {
+            $version = new Version();
+            if ($version->getId()>=2000140) {
                 if ( !$view instanceof \Phalcon\Mvc\ViewInterface && $view instanceof \Phalcon\Mvc\ViewBaseInterface) {
                     $viewFilePath = realpath($view->getViewsDir()).DIRECTORY_SEPARATOR.$viewFilePath;
                 }
@@ -563,7 +564,7 @@ NEWCLASS;
         $config  = $this->config;
 
         if (!$this->isEnabled() ) {
-            return $response;
+            //return $response;
         }
 
         if ($this->shouldCollect('config', false) && $this->di->has('config')) {
@@ -622,7 +623,7 @@ NEWCLASS;
             // Notice: All Collectors must be added before check if is debugbar request.
             return $response;
         }
-
+        
         try {
             if ($this->isRedirection($response)) {
                 $this->stackData();
