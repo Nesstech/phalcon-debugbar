@@ -19,9 +19,8 @@ use Phalcon\Config\Adapter\Php;
 use Phalcon\Config\Adapter\Ini;
 use Phalcon\Config\Adapter\Json;
 use Phalcon\Config\Adapter\Yaml;
-use Phalcon\Config;
+use Phalcon\Config\Config;
 use Phalcon\DI\Injectable;
-use Snowair\Debugbar\Controllers\ToolsController;
 
 class ServiceProvider extends Injectable {
 
@@ -152,7 +151,7 @@ class ServiceProvider extends Injectable {
 				}
 			});
 		}elseif (  $app instanceof Application ) {
-			$eventsManager->attach('application:beforeSendResponse',function($event,$app,$response) use($debugbar){
+			$eventsManager->attach('application:beforeSendResponse',function($event,$app,$response) use($debugbar){				
 				$debugbar->modifyResponse($response);
 			});
 		}
@@ -187,10 +186,11 @@ class ServiceProvider extends Injectable {
             $allow_routes = $config->get('allow_routes')->toArray();
 			
 			$current = $router->getMatchedRoute();
+			
             if (is_object( $current )) {
                 $current = $current->getName();
 
-                if(empty($current) || strpos($current,'debugbar')===0){
+                if(!empty($current) && strpos($current,'debugbar')===0){
                     $app = $this->di['app'];
                     if (method_exists( $app, 'useImplicitView' )) {
                         $app->useImplicitView(false);
