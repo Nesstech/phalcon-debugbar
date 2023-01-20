@@ -87,7 +87,7 @@ class Profiler extends  PhalconProfiler {
 			$activeProfile->setSqlBindTypes($sqlBindTypes);
 		}
 
-		$activeProfile->setInitialTime(microtime(true));
+		$activeProfile->setInitialTime(hrtime(true));
 
 		if ( method_exists($this, "beforeStartProfile")) {
 			$this->beforeStartProfile($activeProfile);
@@ -172,12 +172,10 @@ class Profiler extends  PhalconProfiler {
      */
     public function stopProfile(): \Phalcon\Db\Profiler
     {
-        $finalTime = microtime(true);
         $activeProfile = $this->_activeProfile;
-        $activeProfile->setFinalTime($finalTime);
+        $activeProfile->setFinalTime(hrtime(true));
 
-        $initialTime = $activeProfile->getInitialTime();
-        $this->totalSeconds = $this->totalSeconds + ($finalTime - $initialTime);
+        $this->totalNanoseconds = $this->totalNanoseconds + $activeProfile->getTotalElapsedNanoseconds();
 
         if ( $this->_db ) {
             $pdo  = $this->_db->getInternalHandler();
