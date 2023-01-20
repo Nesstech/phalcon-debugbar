@@ -75,7 +75,7 @@ class Filesystem implements  StorageInterface
 	{
 		$lifetime = $this->gc_lifetime*60*60;
 		$Finder = new \RecursiveDirectoryIterator(dirname($this->dirname),
-		      \FilesystemIterator::KEY_AS_FILENAME 
+		      \FilesystemIterator::KEY_AS_FILENAME
 			| \FilesystemIterator::CURRENT_AS_FILEINFO
 			| \FilesystemIterator::SKIP_DOTS);
 		$now = time();
@@ -105,7 +105,7 @@ class Filesystem implements  StorageInterface
 	 * @return array
 	 */
 	function get( $id ) {
-		return json_decode(file_get_contents($this->makeFilename($id)), true);
+		return json_decode(@file_get_contents($this->makeFilename($id)), true);
 	}
 
 	/**
