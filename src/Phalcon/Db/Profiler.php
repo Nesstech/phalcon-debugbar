@@ -28,7 +28,6 @@ class Profiler extends  PhalconProfiler {
 	 */
 	protected $_db;
 
-  protected $totalSeconds = 0;
 	public function handleFailed() {
 		$latest = $this->_activeProfile;
 		if ( !$this->_stoped && $latest) {
