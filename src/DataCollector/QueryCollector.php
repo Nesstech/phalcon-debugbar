@@ -62,7 +62,7 @@ class QueryCollector extends PDOCollector{
 				'connection'    => $show_conn?$profile->connection:null,
 				'is_success'   => true,
 				'duration'     => $profile->getTotalElapsedSeconds(),
-				'duration_str' => $this->getDataFormatter()->formatDuration($profile->getTotalElapsedSeconds()),
+				'duration_str' => $this->getDataFormatter()->formatDuration($profile->getTotalElapsedNanoseconds())
 			);
 			if ( $explains = $profile->explain ) {
 				foreach ( $explains as $explain ) {
