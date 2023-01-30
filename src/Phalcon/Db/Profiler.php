@@ -177,7 +177,7 @@ class Profiler extends  PhalconProfiler {
         $activeProfile->setFinalTime($finalTime);
 
         $initialTime = $activeProfile->getInitialTime();
-        $this->totalSeconds = $this->totalSeconds + ($finalTime - $initialTime);
+        $this->totalNanoseconds = $this->totalNanoseconds + ($finalTime - $initialTime);
 
         if ( $this->_db ) {
             $pdo  = $this->_db->getInternalHandler();
