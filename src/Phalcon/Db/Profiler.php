@@ -23,6 +23,12 @@ class Profiler extends  PhalconProfiler {
 	 * @var  Item $activeProfile
 	 */
 	protected $_activeProfile;
+
+	/**
+	 * @var  array $_allProfiles
+	 */
+	public $_allProfiles;
+
 	/**
 	 * @var AbstractAdapter  $_db
 	 */
@@ -145,7 +151,7 @@ class Profiler extends  PhalconProfiler {
     public function quote($pdo, $value, $type=null )
     {
         if ($type===null) {
-            return $pdo->quote($value);
+            return $pdo->quote("{$value}");
         }
         switch($type){
             case Column::BIND_SKIP:
@@ -160,7 +166,7 @@ class Profiler extends  PhalconProfiler {
                 $value = $value?'true':'false';
                 break;
             default:
-                $value = $pdo->quote($value);
+                $value = $pdo->quote("{$value}");
         }
         return $value;
     }
